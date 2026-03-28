@@ -106,29 +106,41 @@
 
   </div>
 
-  <script>
-    function login() {
-      const user = document.getElementById('loginUser').value;
-      const pass = document.getElementById('loginPass').value;
-      if(user && pass) {
-        document.getElementById('loginMessage').innerText = "Login successful!";
-        setTimeout(() => {
-          window.location.href = "dashboard.html";
-        }, 1000);
-      } else {
-        document.getElementById('loginMessage').innerText = "Please enter username and password.";
-      }
-    }
+  function login() {
+  const user = document.getElementById('loginUser').value;
+  const pass = document.getElementById('loginPass').value;
+  const msg = document.getElementById('loginMessage');
 
-    function signup() {
-      const user = document.getElementById('signupUser').value;
-      const pass = document.getElementById('signupPass').value;
-      if(user && pass) {
-        document.getElementById('signupMessage').innerText = "Signup successful!";
-      } else {
-        document.getElementById('signupMessage').innerText = "Please fill all fields.";
-      }
-    }
-  </script>
-</body>
-</html>
+  if(user && pass) {
+    msg.innerText = "Login successful!";
+    msg.style.transition = "opacity 0.8s";
+    msg.style.opacity = 1;
+
+    setTimeout(() => {
+      msg.style.opacity = 0;
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 800);
+    }, 1000);
+  } else {
+    msg.innerText = "Please enter username and password.";
+  }
+}
+
+function signup() {
+  const user = document.getElementById('signupUser').value;
+  const pass = document.getElementById('signupPass').value;
+  const msg = document.getElementById('signupMessage');
+
+  if(user && pass) {
+    msg.innerText = "Signup successful!";
+    msg.style.transition = "opacity 0.8s";
+    msg.style.opacity = 1;
+
+    setTimeout(() => {
+      msg.style.opacity = 0;
+    }, 1000);
+  } else {
+    msg.innerText = "Please fill all fields.";
+  }
+}
