@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vaultix - High-Gain Investment Platform</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body { font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; margin:0; padding:0; background:#f4f6f8; color:#333;}
+h2,h3{margin:15px 0;}
+#auth,#app {max-width:550px;margin:30px auto;background:white;padding:25px;border-radius:12px;box-shadow:0 6px 12px rgba(0,0,0,0.1);}
+input,select,button{margin:8px 0;padding:12px;width:100%;border-radius:6px;border:1px solid #ccc;font-size:16px;box-sizing:border-box;}
+input:focus, select:focus{outline:none;border-color:#0984e3;box-shadow:0 0 5px rgba(9,132,227,0.5);}
+button{background:#0984e3;color:white;border:none;cursor:pointer;font-weight:bold;transition:0.3s;}
+button:hover{background:#065cbf;}
+#toast{visibility:hidden;min-width:200px;background-color:#00b894;color:white;text-align:center;border-radius:8px;padding:12px;position:fixed;left:50%;bottom:30px;transform:translateX(-50%);z-index:1000;font-weight:bold;box-shadow:0 4px 6px rgba(0,0,0,0.2);transition:visibility 0s, opacity 0.5s linear;opacity:0;}
+nav{display:flex;justify-content:space-between;align-items:center;background:#0984e3;color:white;padding:12px 15px;border-radius:12px 12px 0 0;position:relative;}
+nav button{background:white;color:#0984e3;padding:6px 12px;border-radius:6px;font-weight:bold;cursor:pointer;}
+nav span{font-weight:bold;font-size:18px;}
+#profileBox{display:none;position:absolute;top:50px;left:10px;background:white;padding:15px;border-radius:10px;width:260px;border:1px solid #ccc;box-shadow:0 6px 12px rgba(0,0,0,0.15);}
+#profileBox p{margin:5px 0;}
+#profileBox a{display:block;margin-top:10px;text-decoration:none;color:#0984e3;font-weight:bold;}
+.wallet{display:flex;align-items:center;justify-content:space-between;margin-top:10px;}
+.wallet span{font-weight:bold;word-break:break-all;}
+.wallet button{width:auto;padding:6px 12px;margin-left:10px;}
+ul{padding-left:15px;}
+ul li{margin-bottom:6px;}
+#toggleAuth{text-align:center;margin-top:15px;}
+#toggleAuth a{color:#0984e3;text-decoration:none;font-weight:bold;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<div id="toast">Copied to clipboard!</div>
+
+<div id="auth">
+<h2 style="text-align:center;" id="authTitle">Sign In</h2>
+
+<div id="signinForm">
+<input type="text" id="loginInput" placeholder="Email or Username">
+<input type="password" id="loginPassword" placeholder="Password">
+<button onclick="login()">Sign In</button>
+</div>
+
+<div id="signupForm" style="display:none;">
+<input type="text" id="firstName" placeholder="First Name">
+<input type="text" id="lastName" placeholder="Last Name">
+<input type="text" id="signupUsername" placeholder="Username">
+<input type="email" id="signupEmail" placeholder="Email">
+<input type="password" id="signupPassword" placeholder="Password">
+<input type="password" id="signupPasswordConfirm" placeholder="Reconfirm Password">
+<select id="signupCountry"></select>
+<button onclick="signup()">Sign Up</button>
+</div>
+
+<p id="toggleAuth">
+<span id="toggleText">Don't have an account? </span>
+<a onclick="toggleAuth()">Sign Up</a>
+</p>
+
+<p style="text-align:center; margin-top:15px;">
+Need help? 
+<a href="mailto:vtsmanage@outlook.com" style="color:#0984e3; text-decoration:none;">
+Contact Human Support Manager
+</a>
+</p>
+</div>
+
+<div id="app" style="display:none;">
+<nav>
+<button onclick="toggleProfile()">Profile</button>
+<span>Vaultix</span>
+<button onclick="logout()">Logout</button>
+</nav>
+
+<div id="profileBox">
+<p><strong>Name:</strong> <span id="profileName"></span></p>
+<p><strong>Username:</strong> <span id="profileUsername"></span></p>
+<p><strong>Email:</strong> <span id="profileEmail"></span></p>
+<p><strong>Country:</strong> <span id="profileCountry"></span></p>
+<a href="mailto:vtsmanage@outlook.com">Contact Human Support Manager</a>
+</div>
+
+<h2>Account Balance: $<span id="balance">0</span></h2>
+
+<h3>Deposit</h3>
+<select id="depositCrypto">
+<option value="btc">BTC</option>
+<option value="sol">SOL</option>
+</select>
+<input type="number" id="depositAmount" placeholder="Amount ($20 min, $1,000,000 max)">
+<button onclick="deposit()">Deposit</button>
+<div class="wallet">
+<span id="walletAddress"></span>
+<button onclick="copyWallet()">Copy</button>
+</div>
+
+<h3>Withdraw</h3>
+<select id="withdrawCryptoSelect">
+<option value="btc">BTC</option>
+<option value="sol">SOL</option>
+</select>
+<input type="number" id="withdrawAmount" placeholder="Amount ($20 min)">
+<input type="text" id="withdrawWallet" placeholder="Destination Wallet Address">
+<button onclick="withdraw()">Withdraw</button>
+
+<h3>Investment</h3>
+<input type="number" id="investAmount" placeholder="Amount to invest ($20 min, $100,000 max)">
+<button onclick="investAmount()">Invest</button>
+<canvas id="investmentChart" width="400" height="200" style="margin-top:15px;"></canvas>
+
+<h3>Notifications</h3>
+<ul id="notificationsList"></ul>
+
+<h3>Transaction History</h3>
+<ul id="historyList"></ul>
+</div>
+
+<script>
+// Countries list (US, Europe, Australia, UAE, India, developed Asia, some African countries)
+const countries = [
+"United States","United Kingdom","Germany","France","Italy","Spain","Portugal","Australia",
+"UAE","India","Japan","South Korea","Singapore","Kenya","South Africa"
+];
+const countrySelect = document.getElementById('signupCountry');
+countries.forEach(c => { let opt=document.createElement('option'); opt.value=c; opt.text=c; countrySelect.appendChild(opt); });
+
+// Global
+let currentUser = null;
+let users = JSON.parse(localStorage.getItem('vaultix_users')) || {};
+let balance = 0, history = [], accountNotifications = [];
+
+// Wallet addresses
+const walletAddresses = {btc:"bc1qexamplebtcaddress", sol:"AcQ4exampleSOLaddress"};
+document.getElementById('depositCrypto').addEventListener('change',function(){document.getElementById('walletAddress').innerText=walletAddresses[this.value];});
+document.getElementById('walletAddress').innerText=walletAddresses[document.getElementById('depositCrypto').value];
+
+// Toast
+function toastMessage(msg){let t=document.getElementById('toast'); t.innerText=msg; t.style.visibility='visible'; t.style.opacity=1; setTimeout(()=>{t.style.opacity=0;t.style.visibility='hidden';},2000);}
+
+// Toggle Auth
+function toggleAuth(){let s=document.getElementById('signinForm'), u=document.getElementById('signupForm'), t=document.getElementById('authTitle'), tt=document.getElementById('toggleText'); s.style.display=s.style.display==='none'?'block':'none'; u.style.display=u.style.display==='none'?'block':'none'; if(s.style.display==='block'){t.innerText="Sign In"; tt.innerText="Don't have an account? "; document.querySelector("#toggleAuth a").innerText="Sign Up";}else{t.innerText="Sign Up"; tt.innerText="Already have an account? "; document.querySelector("#toggleAuth a").innerText="Sign In";}}
+
+// Signup
+function signup() {
+    const fn=document.getElementById('firstName').value.trim();
+    const ln=document.getElementById('lastName').value.trim();
+    const u=document.getElementById('signupUsername').value.trim();
+    const e=document.getElementById('signupEmail').value.trim();
+    const p=document.getElementById('signupPassword').value;
+    const pc=document.getElementById('signupPasswordConfirm').value;
+    const c=document.getElementById('signupCountry').value;
+
+    if(!fn||!ln||!u||!e||!p||!pc||!c){alert("Fill all fields");return;}
+    if(p!==pc){alert("Passwords do not match"); return;}
+    if(users[e] || Object.values(users).some(x=>x.username===u)){alert("Email or username already exists"); return;}
+
+    users[e]={firstName:fn,lastName:ln,username:u,email:e,password:p,country:c,balance:0,history:[],notifications:[],loginHistory:[]};
+    localStorage.setItem('vaultix_users',JSON.stringify(users));
+    alert("Account created successfully! You can now sign in.");
+    toggleAuth();
+}
+
+// Login
+function login() {
+    const input=document.getElementById('loginInput').value.trim();
+    const password=document.getElementById('loginPassword').value;
+    let emailKey=null;
+    for(let k in users){if(users[k].email===input||users[k].username===input){emailKey=k;break;}}
+    if(!emailKey||users[emailKey].password!==password){alert("Invalid login");return;}
+
+    currentUser=users[emailKey];
+    currentUser.loginHistory.push(`Logged in at ${new Date().toLocaleString()}`);
+    currentUser.notifications.push(`Welcome back!`);
+    localStorage.setItem('vaultix_users',JSON.stringify(users));
+
+    document.getElementById('auth').style.display='none';
+    document.getElementById('app').style.display='block';
+    loadUserData();
+    showProfile();
+}
+
+// Logout
+function logout(){currentUser=null; document.getElementById('app').style.display='none'; document.getElementById('auth').style.display='block'; document.getElementById('loginInput').value=''; document.getElementById('loginPassword').value='';}
+
+// Save & Load
+function saveUserData(){users[currentUser.email]=currentUser; localStorage.setItem('vaultix_users',JSON.stringify(users));}
+function loadUserData(){balance=currentUser.balance; history=currentUser.history; accountNotifications=currentUser.notifications; render();}
+
+// Profile
+function toggleProfile(){let box=document.getElementById('profileBox'); box.style.display=(box.style.display==='block')?'none':'block';}
+function showProfile(){document.getElementById('profileName').innerText=currentUser.firstName+" "+currentUser.lastName; document.getElementById('profileUsername').innerText=currentUser.username; document.getElementById('profileEmail').innerText=currentUser.email; document.getElementById('profileCountry').innerText=currentUser.country;}
+
+// Render
+function render(){document.getElementById('balance').innerText=balance.toFixed(2); document.getElementById('notificationsList').innerHTML=accountNotifications.map(n=>`<li>${n}</li>`).join(''); document.getElementById('historyList').innerHTML=history.map(h=>`<li>${h.date} - ${h.type} ${h.crypto?h.crypto:''} ${h.amount?h.amount:''}</li>`).join(''); updateChart();}
+
+// Copy Wallet
+function copyWallet(){navigator.clipboard.writeText(document.getElementById('walletAddress').innerText).then(()=>{toastMessage("Wallet address copied!")});}
+
+// Deposit
+function deposit(){let crypto=document.getElementById('depositCrypto').value; let amt=parseFloat(document.getElementById('depositAmount').value); if(!amt||amt<20||amt>1000000){toastMessage("Invalid deposit amount"); return;} balance+=amt; history.push({date:new Date().toLocaleString(),type:'Deposit',crypto:crypto.toUpperCase(),amount:amt}); accountNotifications.push(`Deposited $${amt} (${crypto.toUpperCase()})`); currentUser.balance=balance; currentUser.history=history; currentUser.notifications=accountNotifications; saveUserData(); render(); toastMessage(`Deposit of $${amt} successful`);}
+
+// Withdraw
+function withdraw(){let crypto=document.getElementById('withdrawCryptoSelect').value; let amt=parseFloat(document.getElementById('withdrawAmount').value); let wallet=document.getElementById('withdrawWallet').value; if(!amt||amt<20||amt>balance){toastMessage("Invalid withdrawal amount"); return;} let enteredPasscode=prompt("Enter your passcode to confirm withdrawal:"); if(!enteredPasscode||enteredPasscode!==currentUser.username){toastMessage("Incorrect passcode"); return;} balance-=amt; history.push({date:new Date().toLocaleString(),type:'Withdraw',crypto:crypto.toUpperCase(),amount:amt,txid:wallet,status:'Completed'}); accountNotifications.push(`Withdrawal of $${amt} (${crypto.toUpperCase()}) completed`); currentUser.balance=balance; currentUser.history=history; currentUser.notifications=accountNotifications; saveUserData(); render(); toastMessage(`Withdrawal of $${amt} successful`);}
+
+// Investment
+let investChart=null;
+function investAmount(){let invest=parseFloat(document.getElementById('investAmount').value); if(!invest||invest<20||invest>100000){toastMessage("Invalid investment amount"); return;} if(invest>balance){toastMessage("Insufficient balance"); return;} balance-=invest; let now=new Date(); let gain=Math.floor(invest*2); history.push({date:now.toLocaleString(),type:'Invest',amount:invest,currentGain:gain}); accountNotifications.push(`Invested $${invest}. Potential gain: $${gain}`); currentUser.balance=balance; currentUser.history=history; currentUser.notifications=accountNotifications; saveUserData(); render();}
+
+// Investment Chart
+function updateChart(){let investHistory=history.filter(h=>h.type==='Invest'); let labels=investHistory.map(h=>h.date); let data=investHistory.map(h=>h.currentGain); if(!investChart){const ctx=document.getElementById('investmentChart').getContext('2d'); investChart=new Chart(ctx,{type:'line',data:{labels:labels,datasets:[{label:'Investment Growth',data:data,borderColor:'#0984e3',fill:false}]},options:{responsive:true,plugins:{legend:{display:true}}}});}else{investChart.data.labels=labels; investChart.data.datasets[0].data=data; investChart.update();}
+</script>
+</body>
+</html>
