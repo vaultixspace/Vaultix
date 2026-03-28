@@ -29,11 +29,9 @@
 
     .container {
       display: flex;
-      flex-wrap: wrap;
       justify-content: center;
       margin: 30px auto;
       max-width: 900px;
-      gap: 20px;
     }
 
     .form-container {
@@ -41,8 +39,9 @@
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      flex: 1 1 300px;
+      width: 100%;
       max-width: 400px;
+      display: none; /* hidden by default, JS will show login */
     }
 
     h2 {
@@ -71,12 +70,30 @@
 
     button:hover {
       background-color: #45a049;
+      transform: scale(1.03);
+      transition: transform 0.2s, background-color 0.2s;
     }
 
     .message {
       text-align: center;
       margin-top: 10px;
       font-weight: 500;
+    }
+
+    .toggle-link {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .toggle-link a {
+      color: #4CAF50;
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .toggle-link a:hover {
+      text-decoration: underline;
     }
 
   </style>
@@ -96,6 +113,9 @@
       <input type="password" id="loginPass" placeholder="Password">
       <button onclick="login()">Login</button>
       <p id="loginMessage" class="message"></p>
+      <div class="toggle-link">
+        Don't have an account? <a onclick="showSignup()">Sign Up</a>
+      </div>
     </div>
 
     <!-- Signup Form -->
@@ -105,11 +125,27 @@
       <input type="password" id="signupPass" placeholder="Password">
       <button onclick="signup()">Signup</button>
       <p id="signupMessage" class="message"></p>
+      <div class="toggle-link">
+        Already have an account? <a onclick="showLogin()">Sign In</a>
+      </div>
     </div>
 
   </div>
 
   <script>
+    // Show login by default
+    document.getElementById('loginForm').style.display = 'block';
+
+    function showSignup() {
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('signupForm').style.display = 'block';
+    }
+
+    function showLogin() {
+      document.getElementById('signupForm').style.display = 'none';
+      document.getElementById('loginForm').style.display = 'block';
+    }
+
     function login() {
       const user = document.getElementById('loginUser').value;
       const pass = document.getElementById('loginPass').value;
@@ -124,8 +160,8 @@
           msg.style.opacity = 0;
           setTimeout(() => {
             window.location.href = "dashboard.html";
-          }, 800);
-        }, 1000);
+          }, 500); // faster redirect
+        }, 700); // shorter message display
       } else {
         msg.innerText = "Please enter username and password.";
       }
