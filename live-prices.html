@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vaultix Live Prices</title>
+<style>
+body { font-family: Arial, sans-serif; margin:20px; background:#f5f5f5; }
+header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+h1 { font-size:20px; color:#2C3E50; }
+#backBtn { padding:8px 12px; border:none; border-radius:6px; background:#3498db; color:white; cursor:pointer; }
+#prices-table { width:100%; border-collapse:collapse; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 6px 12px rgba(0,0,0,0.05); }
+#prices-table th, #prices-table td { padding:12px 10px; text-align:left; border-bottom:1px solid #ddd; }
+#prices-table th { background:#3498db; color:white; }
+@media screen and (max-width:480px){ #prices-table th, #prices-table td{font-size:14px; padding:8px;} }
+</style>
+</head>
+<body>
+
+<header>
+    <h1>Live Prices</h1>
+    <button id="backBtn">Back</button>
+</header>
+
+<table id="prices-table">
+    <thead>
+        <tr><th>Asset</th><th>Price ($)</th><th>Change</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>Bitcoin</td><td id="btc-price">30000</td><td id="btc-change">+0.2%</td></tr>
+        <tr><td>Ethereum</td><td id="eth-price">2000</td><td id="eth-change">-0.1%</td></tr>
+        <tr><td>Gold</td><td id="gold-price">1800</td><td id="gold-change">+0.05%</td></tr>
+        <tr><td>Silver</td><td id="silver-price">25</td><td id="silver-change">+0.1%</td></tr>
+    </tbody>
+</table>
+
+<script>
+// Back button
+document.getElementById('backBtn').onclick = ()=> { window.location.href = '/'; };
+
+// Simulate live price updates
+function randomChange(){ return (Math.random()*2-1).toFixed(2); } // -1 to +1
+function updatePrices(){
+    const btc = parseFloat(document.getElementById('btc-price').innerText);
+    const eth = parseFloat(document.getElementById('eth-price').innerText);
+    const gold = parseFloat(document.getElementById('gold-price').innerText);
+    const silver = parseFloat(document.getElementById('silver-price').innerText);
+
+    const btcNew = (btc + randomChange()).toFixed(2);
+    const ethNew = (eth + randomChange()/2).toFixed(2);
+    const goldNew = (gold + randomChange()/10).toFixed(2);
+    const silverNew = (silver + randomChange()/100).toFixed(2);
+
+    document.getElementById('btc-change').innerText = (btcNew-btc>0?'+':'')+((btcNew-btc)/btc*100).toFixed(2)+'%';
+    document.getElementById('eth-change').innerText = (ethNew-eth>0?'+':'')+((ethNew-eth)/eth*100).toFixed(2)+'%';
+    document.getElementById('gold-change').innerText = (goldNew-gold>0?'+':'')+((goldNew-gold)/gold*100).toFixed(2)+'%';
+    document.getElementById('silver-change').innerText = (silverNew-silver>0?'+':'')+((silverNew-silver)/silver*100).toFixed(2)+'%';
+
+    document.getElementById('btc-price').innerText = btcNew;
+    document.getElementById('eth-price').innerText = ethNew;
+    document.getElementById('gold-price').innerText = goldNew;
+    document.getElementById('silver-price').innerText = silverNew;
+}
+
+// Update prices every 3 seconds
+setInterval(updatePrices,3000);
+</script>
+</body>
+</html>
