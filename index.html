@@ -28,52 +28,55 @@
     }
 
     .container {
-      width: 90%;
-      max-width: 500px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
       margin: 30px auto;
+      max-width: 900px;
+      gap: 20px;
     }
 
-    .card {
+    .form-container {
       background-color: white;
       padding: 20px;
-      margin: 15px 0;
       border-radius: 10px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      flex: 1 1 300px;
+      max-width: 400px;
     }
 
     h2 {
+      margin-top: 0;
       text-align: center;
-      margin-bottom: 20px;
     }
 
-    input, button {
+    input {
       width: 100%;
-      padding: 10px 15px;
+      padding: 12px;
       margin: 10px 0;
       border-radius: 5px;
       border: 1px solid #ccc;
-      font-size: 16px;
-      box-sizing: border-box;
     }
 
     button {
+      width: 100%;
+      padding: 12px;
       background-color: #4CAF50;
       color: white;
       border: none;
+      border-radius: 5px;
       cursor: pointer;
-      transition: 0.3s ease;
+      font-size: 1em;
     }
 
     button:hover {
       background-color: #45a049;
-      transform: scale(1.05);
     }
 
     .message {
       text-align: center;
-      color: green;
-      font-weight: bold;
-      margin: 10px 0;
+      margin-top: 10px;
+      font-weight: 500;
     }
 
   </style>
@@ -81,66 +84,71 @@
 <body>
 
   <header>
-    <h1><i class="fas fa-coins"></i> Vaultix</h1>
+    <h1><i class="fas fa-lock"></i> Vaultix</h1>
   </header>
 
   <div class="container">
 
-    <!-- Login Card -->
-    <div class="card">
-      <h2><i class="fas fa-sign-in-alt"></i> Login</h2>
+    <!-- Login Form -->
+    <div class="form-container" id="loginForm">
+      <h2>Sign In</h2>
       <input type="text" id="loginUser" placeholder="Username">
       <input type="password" id="loginPass" placeholder="Password">
-      <button onclick="login()"><i class="fas fa-arrow-right"></i> Login</button>
-      <div id="loginMessage" class="message"></div>
+      <button onclick="login()">Login</button>
+      <p id="loginMessage" class="message"></p>
     </div>
 
-    <!-- Signup Card -->
-    <div class="card">
-      <h2><i class="fas fa-user-plus"></i> Signup</h2>
+    <!-- Signup Form -->
+    <div class="form-container" id="signupForm">
+      <h2>Sign Up</h2>
       <input type="text" id="signupUser" placeholder="Username">
       <input type="password" id="signupPass" placeholder="Password">
-      <button onclick="signup()"><i class="fas fa-check"></i> Signup</button>
-      <div id="signupMessage" class="message"></div>
+      <button onclick="signup()">Signup</button>
+      <p id="signupMessage" class="message"></p>
     </div>
 
   </div>
 
-  function login() {
-  const user = document.getElementById('loginUser').value;
-  const pass = document.getElementById('loginPass').value;
-  const msg = document.getElementById('loginMessage');
+  <script>
+    function login() {
+      const user = document.getElementById('loginUser').value;
+      const pass = document.getElementById('loginPass').value;
+      const msg = document.getElementById('loginMessage');
 
-  if(user && pass) {
-    msg.innerText = "Login successful!";
-    msg.style.transition = "opacity 0.8s";
-    msg.style.opacity = 1;
+      if(user && pass) {
+        msg.innerText = "Login successful!";
+        msg.style.transition = "opacity 0.8s";
+        msg.style.opacity = 1;
 
-    setTimeout(() => {
-      msg.style.opacity = 0;
-      setTimeout(() => {
-        window.location.href = "dashboard.html";
-      }, 800);
-    }, 1000);
-  } else {
-    msg.innerText = "Please enter username and password.";
-  }
-}
+        setTimeout(() => {
+          msg.style.opacity = 0;
+          setTimeout(() => {
+            window.location.href = "dashboard.html";
+          }, 800);
+        }, 1000);
+      } else {
+        msg.innerText = "Please enter username and password.";
+      }
+    }
 
-function signup() {
-  const user = document.getElementById('signupUser').value;
-  const pass = document.getElementById('signupPass').value;
-  const msg = document.getElementById('signupMessage');
+    function signup() {
+      const user = document.getElementById('signupUser').value;
+      const pass = document.getElementById('signupPass').value;
+      const msg = document.getElementById('signupMessage');
 
-  if(user && pass) {
-    msg.innerText = "Signup successful!";
-    msg.style.transition = "opacity 0.8s";
-    msg.style.opacity = 1;
+      if(user && pass) {
+        msg.innerText = "Signup successful!";
+        msg.style.transition = "opacity 0.8s";
+        msg.style.opacity = 1;
 
-    setTimeout(() => {
-      msg.style.opacity = 0;
-    }, 1000);
-  } else {
-    msg.innerText = "Please fill all fields.";
-  }
-}
+        setTimeout(() => {
+          msg.style.opacity = 0;
+        }, 1000);
+      } else {
+        msg.innerText = "Please fill all fields.";
+      }
+    }
+  </script>
+
+</body>
+</html>
