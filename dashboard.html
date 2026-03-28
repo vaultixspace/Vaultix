@@ -3,76 +3,249 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vaultix - Dashboard</title>
-
-  <!-- Google Font -->
+  <title>Vaultix Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
   <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #F5F5F5;
-      color: #2C3E50;
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
-      background: linear-gradient(90deg, #4CAF50, #2C3E50);
-      color: white;
-      text-align: center;
-      padding: 25px 0;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    }
-
-    .container {
-      width: 90%;
-      max-width: 1000px;
-      margin: 30px auto;
-    }
-
-    .card {
-      background-color: white;
-      padding: 20px;
-      margin: 15px 0;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-
-    h2 {
-      margin-top: 0;
-    }
-
-    .badge {
-      background-color: #4CAF50;
-      color: white;
-      padding: 3px 8px;
-      border-radius: 5px;
-      font-size: 0.9em;
-    }
+    body { font-family: 'Roboto', sans-serif; background:#F5F5F5; color:#2C3E50; margin:0; padding:0; }
+    header { background:linear-gradient(90deg, #4CAF50, #2C3E50); color:white; text-align:center; padding:25px 0; box-shadow:0 4px 6px rgba(0,0,0,0.2); }
+    .container { width:90%; max-width:1000px; margin:30px auto; }
+    .card { background:white; padding:20px; margin:15px 0; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
+    h2 { margin-top:0; }
+    .badge { background:#4CAF50; color:white; padding:3px 8px; border-radius:5px; font-size:0.9em; }
+    input { padding:5px; margin:5px 0; }
+    button { padding:5px 10px; margin:5px 5px 5px 0; cursor:pointer; }
   </style>
 </head>
 <body>
-
   <header>
     <h1><i class="fas fa-tachometer-alt"></i> Vaultix Dashboard</h1>
   </header>
 
   <div class="container">
 
+    <!-- Wallet Card -->
     <div class="card">
       <h2><i class="fas fa-wallet"></i> Wallet</h2>
-      <p>Balance: $0 <span class="badge">Active</span></p>
+      <p>Balance: $<span id="walletBalance">0</span> <span class="badge">Active</span></p>
+
+      <p>
+        Deposit Amount: $<input type="number" id="depositInput" placeholder="Min $20">
+      </p>
+      <button onclick="showDeposit('BTC')">Deposit BTC</button>
+      <button onclick="showDeposit('SOL')">Deposit SOL</button>
+
+      <div id="depositSection" style="display:none; margin-top:10px;">
+        <p>Deposit Address: <span id="depositAddress"></span></p>
+        <p>Amount: $<span id="depositAmount">0</span></p>
+        <button id="confirmDepositBtn" onclick="showSentButton()">Confirm Deposit</button>
+        <button id="sentDepositBtn" style="display:none;" onclick="finalizeDeposit()">I've Sent the Deposit</button>
+      </div>
+
+      <p>
+        Withdraw Amount: $<input type="number" id="withdrawInput" placeholder="Enter amount">
+        <button onclick="withdrawMain()">Withdraw</button>
+      </p>
     </div>
 
+    <!-- Investments Card -->
     <div class="card">
       <h2><i class="fas fa-chart-line"></i> Investments</h2>
-      <p>No active investments <span class="badge">None</span></p>
+      <p>Invest Amount: $<input type="number" id="investAmount" min="100" max="100000" placeholder="100 - 100,000"></p>
+      <button onclick="invest()">Invest</button>
+
+      <div id="investmentsContainer" style="margin-top:10px;">
+        <p>No active investments <span class="badge">None</span></p>
+      </div>
+    </div>
+
+    <!-- Profile Card -->
+    <div class="card">
+      <h2><i class="fas fa-user"></i> Profile</h2>
+      <p>First Name: <span id="profileFirstName"></span></p>
+      <p>Last Name: <span id="profileLastName"></span></p>
+      <p>Email: <span id="profileEmail"></span></p>
+      <p>Country: <span id="profileCountry"></span></p>
+    </div>
+
+    <!-- Live Crypto Prices -->
+    <div class="card">
+      <h2><i class="fas fa-coins"></i> Live Crypto Prices</h2>
+      <p>BTC: $<span id="btcPrice">Loading...</span></p>
+      <p>SOL: $<span id="solPrice">Loading...</span></p>
     </div>
 
   </div>
 
+  <script>
+    // ----------- User Data -----------
+    let users = JSON.parse(localStorage.getItem("users")) || {};
+    let currentUser = localStorage.getItem("currentUser") || Object.keys(users)[0];
+
+    if(!users[currentUser]) {
+      // default user for testing
+      users[currentUser] = { balance:0, investments:[], firstName:"John", lastName:"Doe", email:"john@example.com", country:"USA" };
+    }
+
+    document.getElementById("walletBalance").innerText = users[currentUser].balance;
+    document.getElementById("profileFirstName").innerText = users[currentUser].firstName;
+    document.getElementById("profileLastName").innerText = users[currentUser].lastName;
+    document.getElementById("profileEmail").innerText = users[currentUser].email;
+    document.getElementById("profileCountry").innerText = users[currentUser].country;
+
+    // ----------- Wallet / Deposit -----------
+    const btcWallet = "bc1qakkc2qn33slcz7xggh8wh6hszjqnfa9k2zlscm";
+    const solWallet = "AcQ4yp84sh86geKeERe1ssX9MAFPS5zko2GfZ3DaQ9LH";
+    let selectedCoin = "";
+    let depositAmount = 0;
+
+    function showDeposit(coin){
+      selectedCoin = coin;
+      let inputAmount = parseFloat(document.getElementById("depositInput").value);
+      if(isNaN(inputAmount) || inputAmount < 20){
+        alert("Minimum deposit is $20");
+        return;
+      }
+      depositAmount = inputAmount;
+
+      document.getElementById("depositSection").style.display = "block";
+      document.getElementById("depositAddress").innerText = coin === "BTC" ? btcWallet : solWallet;
+      document.getElementById("depositAmount").innerText = depositAmount;
+      document.getElementById("confirmDepositBtn").style.display = "inline-block";
+      document.getElementById("sentDepositBtn").style.display = "none";
+    }
+
+    function showSentButton(){
+      document.getElementById("confirmDepositBtn").style.display = "none";
+      document.getElementById("sentDepositBtn").style.display = "inline-block";
+    }
+
+    function finalizeDeposit(){
+      users[currentUser].balance += depositAmount;
+      saveUser();
+      alert(selectedCoin + " deposit received! Balance updated: $" + users[currentUser].balance);
+      document.getElementById("depositSection").style.display = "none";
+      window.location.href = "dashboard.html";
+    }
+
+    // Main balance withdrawal
+    function withdrawMain(){
+      let amount = parseFloat(document.getElementById("withdrawInput").value);
+      if(isNaN(amount) || amount <= 0){
+        alert("Enter a valid amount to withdraw.");
+        return;
+      }
+      if(amount > users[currentUser].balance){
+        alert("Insufficient balance.");
+        return;
+      }
+      users[currentUser].balance -= amount;
+      saveUser();
+      alert("Withdrawn $" + amount + " successfully!");
+    }
+
+    // ----------- Investments -----------
+    function invest(){
+      let amount = parseInt(document.getElementById("investAmount").value);
+      if(isNaN(amount) || amount < 100 || amount > 100000){
+        alert("Investment must be between $100 and $100,000");
+        return;
+      }
+      if(users[currentUser].balance < amount){
+        alert("Insufficient balance to invest.");
+        return;
+      }
+
+      users[currentUser].balance -= amount;
+      if(!users[currentUser].investments) users[currentUser].investments = [];
+      let investId = Date.now();
+      let target = amount * 15;
+      users[currentUser].investments.push({
+        id: investId,
+        amount: amount,
+        progress: 0,
+        target: target,
+        daysPassed: 0
+      });
+      saveUser();
+      displayInvestments();
+      alert("Investment added! Potential return: $" + target);
+    }
+
+    function displayInvestments(){
+      let container = document.getElementById("investmentsContainer");
+      container.innerHTML = "";
+      if(!users[currentUser].investments || users[currentUser].investments.length === 0){
+        container.innerHTML = '<p>No active investments <span class="badge">None</span></p>';
+        return;
+      }
+
+      users[currentUser].investments.forEach(inv => {
+        let card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <p>Investment: $${inv.amount}</p>
+          <p>Progress: <span id="progress${inv.id}">${inv.progress}%</span></p>
+          <p>Potential Return: $${inv.target}</p>
+          <button onclick="withdrawInvestment(${inv.id})">Withdraw to Balance</button>
+        `;
+        container.appendChild(card);
+        simulateInvestmentGrowth(inv.id);
+      });
+    }
+
+    function withdrawInvestment(id){
+      let invIndex = users[currentUser].investments.findIndex(i => i.id === id);
+      if(invIndex === -1) return;
+
+      let inv = users[currentUser].investments[invIndex];
+      let proportion = inv.progress / 100;
+      let payout = Math.floor(inv.target * proportion);
+
+      users[currentUser].balance += payout;
+      users[currentUser].investments.splice(invIndex, 1);
+      saveUser();
+      displayInvestments();
+      alert("Investment withdrawn! $" + payout + " added to main balance.");
+    }
+
+    function simulateInvestmentGrowth(id){
+      let progressSpan = document.getElementById(`progress${id}`);
+      if(!progressSpan) return;
+
+      let inv = users[currentUser].investments.find(i => i.id === id);
+      if(!inv) return;
+
+      let interval = setInterval(()=>{
+        inv.daysPassed++;
+        inv.progress = Math.min(100, Math.floor((inv.daysPassed / 30) * 100));
+        progressSpan.innerText = inv.progress + "%";
+        saveUser();
+        if(inv.progress >= 100) clearInterval(interval);
+      }, 2000);
+    }
+
+    // Save and update balance
+    function saveUser(){
+      localStorage.setItem("users", JSON.stringify(users));
+      document.getElementById("walletBalance").innerText = users[currentUser].balance;
+    }
+
+    displayInvestments();
+
+    // ----------- Live Crypto Prices -----------
+    async function updateCryptoPrices(){
+      try {
+        let response = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,solana&vs_currencies=usd");
+        let data = await response.json();
+        document.getElementById("btcPrice").innerText = data.bitcoin.usd;
+        document.getElementById("solPrice").innerText = data.solana.usd;
+      } catch(e){
+        console.error(e);
+      }
+    }
+    updateCryptoPrices();
+    setInterval(updateCryptoPrices, 60000); // refresh every 60s
+  </script>
 </body>
 </html>
