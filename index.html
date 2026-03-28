@@ -1,190 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vaultix - Login & Signup</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vaultix - Login & Signup</title>
 
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <!-- Font Awesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Google Fonts for Crypto logo -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #F5F5F5;
-      color: #2C3E50;
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
-      background: linear-gradient(90deg, #4CAF50, #2C3E50);
-      color: white;
-      text-align: center;
-      padding: 25px 0;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    }
-
-    .container {
-      display: flex;
-      justify-content: center;
-      margin: 30px auto;
-      max-width: 900px;
-    }
-
-    .form-container {
-      background-color: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 400px;
-      display: none; /* hidden by default, JS will show login */
-    }
-
-    h2 {
-      margin-top: 0;
-      text-align: center;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 1em;
-    }
-
-    button:hover {
-      background-color: #45a049;
-      transform: scale(1.03);
-      transition: transform 0.2s, background-color 0.2s;
-    }
-
-    .message {
-      text-align: center;
-      margin-top: 10px;
-      font-weight: 500;
-    }
-
-    .toggle-link {
-      text-align: center;
-      margin-top: 10px;
-    }
-
-    .toggle-link a {
-      color: #4CAF50;
-      cursor: pointer;
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    .toggle-link a:hover {
-      text-decoration: underline;
-    }
-
-  </style>
+<style>
+body { font-family:'Roboto',sans-serif; background:#F5F5F5; color:#2C3E50; margin:0; padding:0;}
+header { display:flex; align-items:center; justify-content:center; gap:10px; padding:25px 0; background:linear-gradient(90deg,#4CAF50,#2C3E50);}
+header h1 { font-family:'Orbitron',sans-serif; font-weight:700; color:#FFD700; text-shadow:0 0 5px #fff,0 0 10px #FFD700; margin:0;}
+header div { font-size:2em; color:#FFD700;}
+.container { display:flex; justify-content:center; margin:30px auto; max-width:900px;}
+.form-container { background:white; padding:20px; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.1); width:100%; max-width:400px; display:none;}
+h2 { text-align:center; margin-top:0;}
+input, select { width:100%; padding:12px; margin:10px 0; border-radius:5px; border:1px solid #ccc;}
+button { width:100%; padding:12px; background:#4CAF50; color:white; border:none; border-radius:5px; cursor:pointer; font-size:1em;}
+button:hover { background:#45a049; transform:scale(1.03); transition:transform 0.2s, background-color 0.2s;}
+.message { text-align:center; margin-top:10px; font-weight:500;}
+.toggle-link { text-align:center; margin-top:10px;}
+.toggle-link a { color:#4CAF50; cursor:pointer; text-decoration:none; font-weight:500;}
+.toggle-link a:hover { text-decoration:underline;}
+</style>
 </head>
 <body>
 
-  <header>
-    <h1><i class="fas fa-lock"></i> Vaultix</h1>
-  </header>
+<header>
+  <div><i class="fas fa-shield-alt"></i></div>
+  <h1>Vaultix</h1>
+</header>
 
-  <div class="container">
+<div class="container">
 
-    <!-- Login Form -->
-    <div class="form-container" id="loginForm">
-      <h2>Sign In</h2>
-      <input type="text" id="loginUser" placeholder="Username">
-      <input type="password" id="loginPass" placeholder="Password">
-      <button onclick="login()">Login</button>
-      <p id="loginMessage" class="message"></p>
-      <div class="toggle-link">
-        Don't have an account? <a onclick="showSignup()">Sign Up</a>
-      </div>
-    </div>
-
-    <!-- Signup Form -->
-    <div class="form-container" id="signupForm">
-      <h2>Sign Up</h2>
-      <input type="text" id="signupUser" placeholder="Username">
-      <input type="password" id="signupPass" placeholder="Password">
-      <button onclick="signup()">Signup</button>
-      <p id="signupMessage" class="message"></p>
-      <div class="toggle-link">
-        Already have an account? <a onclick="showLogin()">Sign In</a>
-      </div>
-    </div>
-
+  <!-- Login Form -->
+  <div class="form-container" id="loginForm">
+    <h2>Sign In</h2>
+    <input type="text" id="loginUser" placeholder="Username">
+    <input type="password" id="loginPass" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <p id="loginMessage" class="message"></p>
+    <div class="toggle-link">Don't have an account? <a onclick="showSignup()">Sign Up</a></div>
   </div>
 
-  <script>
-    // Show login by default
-    document.getElementById('loginForm').style.display = 'block';
+  <!-- Signup Form -->
+  <div class="form-container" id="signupForm">
+    <h2>Sign Up</h2>
+    <input type="text" id="firstName" placeholder="First Name">
+    <input type="text" id="lastName" placeholder="Last Name">
+    <input type="text" id="signupUser" placeholder="Username">
+    <input type="email" id="signupEmail" placeholder="Email">
 
-    function showSignup() {
-      document.getElementById('loginForm').style.display = 'none';
-      document.getElementById('signupForm').style.display = 'block';
-    }
+    <select id="signupCountry" required>
+      <option value="">Select Country</option>
 
-    function showLogin() {
-      document.getElementById('signupForm').style.display = 'none';
-      document.getElementById('loginForm').style.display = 'block';
-    }
+      <!-- America -->
+      <option value="USA">USA</option>
+      <option value="Canada">Canada</option>
+      <option value="Mexico">Mexico</option>
+      <option value="Chile">Chile</option>
+      <option value="Costa Rica">Costa Rica</option>
 
-    function login() {
-      const user = document.getElementById('loginUser').value;
-      const pass = document.getElementById('loginPass').value;
-      const msg = document.getElementById('loginMessage');
+      <!-- Europe -->
+      <option value="UK">UK</option>
+      <option value="Germany">Germany</option>
+      <option value="France">France</option>
+      <option value="Switzerland">Switzerland</option>
+      <option value="Netherlands">Netherlands</option>
+      <option value="Sweden">Sweden</option>
+      <option value="Norway">Norway</option>
+      <option value="Denmark">Denmark</option>
+      <option value="Belgium">Belgium</option>
+      <option value="Austria">Austria</option>
+      <option value="Finland">Finland</option>
+      <option value="Ireland">Ireland</option>
+      <option value="Luxembourg">Luxembourg</option>
 
-      if(user && pass) {
-        msg.innerText = "Login successful!";
-        msg.style.transition = "opacity 0.8s";
-        msg.style.opacity = 1;
+      <!-- Middle East -->
+      <option value="UAE">UAE</option>
+      <option value="Israel">Israel</option>
+      <option value="Qatar">Qatar</option>
+      <option value="Saudi Arabia">Saudi Arabia</option>
 
-        setTimeout(() => {
-          msg.style.opacity = 0;
-          setTimeout(() => {
-            window.location.href = "dashboard.html";
-          }, 500); // faster redirect
-        }, 700); // shorter message display
-      } else {
-        msg.innerText = "Please enter username and password.";
-      }
-    }
+      <!-- Asia -->
+      <option value="Japan">Japan</option>
+      <option value="South Korea">South Korea</option>
+      <option value="Singapore">Singapore</option>
+      <option value="Hong Kong">Hong Kong</option>
+      <option value="Taiwan">Taiwan</option>
 
-    function signup() {
-      const user = document.getElementById('signupUser').value;
-      const pass = document.getElementById('signupPass').value;
-      const msg = document.getElementById('signupMessage');
+      <!-- Africa -->
+      <option value="South Africa">South Africa</option>
+      <option value="Mauritius">Mauritius</option>
+      <option value="Morocco">Morocco</option>
+    </select>
 
-      if(user && pass) {
-        msg.innerText = "Signup successful!";
-        msg.style.transition = "opacity 0.8s";
-        msg.style.opacity = 1;
+    <input type="password" id="signupPass" placeholder="Password">
+    <input type="password" id="signupConfirm" placeholder="Confirm Password">
+    <button onclick="signup()">Signup</button>
+    <p id="signupMessage" class="message"></p>
+    <div class="toggle-link">Already have an account? <a onclick="showLogin()">Sign In</a></div>
+  </div>
 
-        setTimeout(() => {
-          msg.style.opacity = 0;
-        }, 1000);
-      } else {
-        msg.innerText = "Please fill all fields.";
-      }
-    }
-  </script>
+</div>
+
+<script>
+document.getElementById('loginForm').style.display='block';
+
+function showSignup(){ document.getElementById('loginForm').style.display='none'; document.getElementById('signupForm').style.display='block'; }
+function showLogin(){ document.getElementById('signupForm').style.display='none'; document.getElementById('loginForm').style.display='block'; }
+
+function signup(){
+  const f = document.getElementById('firstName').value.trim();
+  const l = document.getElementById('lastName').value.trim();
+  const u = document.getElementById('signupUser').value.trim();
+  const e = document.getElementById('signupEmail').value.trim();
+  const c = document.getElementById('signupCountry').value;
+  const p = document.getElementById('signupPass').value;
+  const cp = document.getElementById('signupConfirm').value;
+  const msg = document.getElementById('signupMessage');
+
+  if(!f||!l||!u||!e||!c||!p||!cp){ msg.innerText="Please fill all fields."; return; }
+  if(p!==cp){ msg.innerText="Passwords do not match."; return; }
+
+  let users = JSON.parse(localStorage.getItem("users")||"{}");
+  if(users[u]){ msg.innerText="Username already exists."; return; }
+
+  users[u]={firstName:f,lastName:l,email:e,country:c,password:p,balance:0,investments:[]};
+  localStorage.setItem("users", JSON.stringify(users));
+  localStorage.setItem("currentUser", u);
+  window.location.href="dashboard.html";
+}
+
+function login(){
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  const msg = document.getElementById('loginMessage');
+
+  let users = JSON.parse(localStorage.getItem("users")||"{}");
+  if(!users[u]){ msg.innerText="Username does not exist."; return; }
+  if(users[u].password!==p){ msg.innerText="Incorrect password."; return; }
+
+  localStorage.setItem("currentUser", u);
+  window.location.href="dashboard.html";
+}
+</script>
 
 </body>
 </html>
