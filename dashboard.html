@@ -1,229 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vaultix Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    body { font-family: 'Roboto', sans-serif; margin:0; padding:0; background:#F5F5F5; color:#2C3E50; }
-    header { background:linear-gradient(90deg, #4CAF50, #2C3E50); color:white; text-align:center; padding:20px 0; box-shadow:0 4px 6px rgba(0,0,0,0.2);}
-    nav { display:flex; justify-content:center; background:#2C3E50; }
-    nav button { flex:1; padding:15px; color:white; background:none; border:none; cursor:pointer; font-weight:500; transition:0.3s; }
-    nav button.active { background:#4CAF50; }
-    .tab-content { display:none; padding:20px; max-width:1000px; margin:20px auto; }
-    .card { background:white; padding:20px; margin:15px 0; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.1);}
-    input, button { padding:5px; margin:5px 5px 5px 0; }
-    #investmentsContainer .card { margin:10px 0; }
-    #cryptoPrices span, #investmentsContainer span { font-weight:bold; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vaultix Dashboard</title>
+<style>
+/* General Styles */
+body { font-family: Arial, sans-serif; margin:0; background:#f5f5f5; overflow-x:hidden; }
+#dashboard-header { display:flex; align-items:center; justify-content:space-between; padding:15px 20px; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,0.1); position:fixed; width:100%; z-index:1000; }
+#dashboard-logo { width:120px; height:auto; }
+#welcome-greeting { font-size:18px; color:#2C3E50; flex:1; text-align:center; }
+#menu-btn { font-size:24px; cursor:pointer; }
+
+#profile-sidebar { position:fixed; top:0; left:-300px; width:280px; height:100%; background:#fff; box-shadow:2px 0 12px rgba(0,0,0,0.2); z-index:2000; transition:left 0.3s ease; padding:20px; }
+#profile-sidebar h3 { margin-top:0; color:#2C3E50; }
+#profile-close { float:right; font-size:20px; cursor:pointer; }
+#profile-sidebar p { margin:15px 0; }
+#profile-sidebar a { color:#3498db; text-decoration:none; font-weight:bold; }
+
+#main-content { padding:100px 20px 40px 20px; max-width:900px; margin:auto; }
+
+/* Portfolio Section */
+#portfolio-section { background:#f9f9f9; border-radius:12px; padding:20px; box-shadow:0 6px 12px rgba(0,0,0,0.05); margin-bottom:20px; position:relative; }
+#portfolio-updated { display:none; color:#27ae60; font-size:14px; margin-left:10px; opacity:0; transition:opacity 0.5s ease; }
+#portfolio-updated.show { display:inline; opacity:1; }
+#progress-container { background:#e0e0e0; border-radius:12px; height:20px; width:100%; margin-top:8px; }
+#progress-bar { height:100%; width:15%; background:#27ae60; border-radius:12px; transition:width 1s ease-in-out; }
+
+/* Buttons */
+#dashboard-buttons { display:flex; flex-wrap:wrap; gap:15px; justify-content:space-between; margin-bottom:20px; }
+#dashboard-buttons button { flex:1 1 calc(50% - 15px); padding:12px 0; border-radius:8px; font-size:16px; font-weight:500; color:#fff; border:none; cursor:pointer; transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease; }
+#depositBtn { background:#4CAF50; } #withdrawBtn { background:#e74c3c; } #dealBtn { background:#f39c12; } #livePricesBtn { background:#3498db; }
+#dashboard-buttons button:hover { transform:scale(1.05); box-shadow:0 6px 12px rgba(0,0,0,0.2); filter:brightness(1.05);}
+#dashboard-buttons button:active { transform:scale(0.95); box-shadow:0 2px 4px rgba(0,0,0,0.2); }
+
+/* Contact Support */
+#contact-support { text-align:center; margin-top:40px; font-family:Arial,sans-serif; }
+#contact-support a { color:#3498db; font-weight:bold; text-decoration:none; }
+#contact-support a:hover { text-decoration:underline; color:#2c80b4; }
+
+/* Portfolio Highlight Pulse */
+@keyframes highlightPulse {0%{box-shadow:0 0 0 rgba(46,204,113,0);}50%{box-shadow:0 0 20px rgba(46,204,113,0.6);}100%{box-shadow:0 0 0 rgba(46,204,113,0);}}
+.highlight { animation:highlightPulse 0.8s ease; }
+
+/* Mobile Optimization */
+@media screen and (max-width:768px){
+    #dashboard-buttons button { flex:1 1 100%; font-size:15px; padding:10px 0; }
+    #welcome-greeting { font-size:16px; text-align:center; }
+    #dashboard-logo { width:90px; }
+}
+</style>
 </head>
 <body>
 
-<header>
-  <h1><i class="fas fa-tachometer-alt"></i> Vaultix Dashboard</h1>
-</header>
+<!-- Header -->
+<div id="dashboard-header">
+    <span id="menu-btn">&#9776;</span>
+    <div id="welcome-greeting">Welcome back, Thomas</div>
+    <img id="dashboard-logo" src="logo.png" alt="Vaultix Logo">
+</div>
 
-<nav>
-  <button class="active" onclick="openTab('walletTab')">Wallet</button>
-  <button onclick="openTab('investTab')">Investments</button>
-  <button onclick="openTab('profileTab')">Profile</button>
-  <button onclick="openTab('cryptoTab')">Live Prices</button>
-  <button onclick="contactSupport()">Contact Support</button>
-</nav>
+<!-- Profile Sidebar -->
+<div id="profile-sidebar">
+    <span id="profile-close">&times;</span>
+    <h3>Profile</h3>
+    <p>Name: Thomas</p>
+    <p>Email: thomas@example.com</p>
+    <a href="mailto:vtsmanage@outlook.com">Contact Support Manager</a>
+</div>
 
-<!-- Wallet Tab -->
-<div id="walletTab" class="tab-content" style="display:block;">
-  <div class="card">
-    <h2>Wallet Balance: $<span id="walletBalance">0</span></h2>
-    <p>
-      Deposit Amount: $<input type="number" id="depositInput" placeholder="Min $20">
-      <button onclick="showDeposit('BTC')">Deposit BTC</button>
-      <button onclick="showDeposit('SOL')">Deposit SOL</button>
-    </p>
-    <div id="depositSection" style="display:none; margin-top:10px;">
-      <p>Deposit Address: <span id="depositAddress"></span></p>
-      <p>Amount: $<span id="depositAmount">0</span></p>
-      <button id="confirmDepositBtn" onclick="showSentButton()">Confirm Deposit</button>
-      <button id="sentDepositBtn" style="display:none;" onclick="finalizeDeposit()">I've Sent the Deposit</button>
+<!-- Main Content -->
+<div id="main-content">
+    <!-- Portfolio -->
+    <div id="portfolio-section">
+        <h2>Investment Portfolio <span id="portfolio-updated">Updated ✔</span></h2>
+        <p>Balance: $<span id="portfolio-balance">10000</span></p>
+        <div id="progress-container">
+            <div id="progress-bar"></div>
+        </div>
     </div>
-    <p>
-      Withdraw Amount: $<input type="number" id="withdrawInput" placeholder="Enter amount">
-      <button onclick="withdrawMain()">Withdraw</button>
-    </p>
-  </div>
-</div>
 
-<!-- Investments Tab -->
-<div id="investTab" class="tab-content">
-  <div class="card">
-    <h2>Make an Investment</h2>
-    <p>Invest Amount: $<input type="number" id="investAmount" min="100" max="100000" placeholder="100 - 100,000">
-       <button onclick="invest()">Invest</button>
-    </p>
-  </div>
-  <div id="investmentsContainer"></div>
-</div>
+    <!-- Dashboard Buttons -->
+    <div id="dashboard-buttons">
+        <button id="depositBtn">Deposit</button>
+        <button id="withdrawBtn">Withdraw</button>
+        <button id="dealBtn">Deal?</button>
+        <button id="livePricesBtn">Live Prices</button>
+    </div>
 
-<!-- Profile Tab -->
-<div id="profileTab" class="tab-content">
-  <div class="card">
-    <h2>Profile</h2>
-    <p>First Name: <span id="profileFirstName"></span></p>
-    <p>Last Name: <span id="profileLastName"></span></p>
-    <p>Email: <span id="profileEmail"></span></p>
-    <p>Country: <span id="profileCountry"></span></p>
-  </div>
-</div>
-
-<!-- Live Crypto Tab -->
-<div id="cryptoTab" class="tab-content">
-  <div class="card" id="cryptoPrices">
-    <h2>Live Crypto Prices</h2>
-    <p>BTC: $<span id="btcPrice">Loading...</span></p>
-    <p>SOL: $<span id="solPrice">Loading...</span></p>
-    <!-- Chart placeholders -->
-    <div id="cryptoChart" style="height:250px; margin-top:20px;">[Crypto Market Chart Placeholder]</div>
-  </div>
+    <!-- Contact Support -->
+    <div id="contact-support">
+        <span>Need Help? </span>
+        <a href="mailto:vtsmanage@outlook.com">Contact Support Manager</a>
+    </div>
 </div>
 
 <script>
-  // --- Tab switching ---
-  function openTab(tabId){
-    document.querySelectorAll(".tab-content").forEach(tc => tc.style.display = "none");
-    document.getElementById(tabId).style.display = "block";
-    document.querySelectorAll("nav button").forEach(btn => btn.classList.remove("active"));
-    event.target.classList.add("active");
-  }
+// Sidebar Toggle
+const menuBtn = document.getElementById('menu-btn');
+const profileSidebar = document.getElementById('profile-sidebar');
+const profileClose = document.getElementById('profile-close');
+menuBtn.onclick = ()=> profileSidebar.style.left = '0';
+profileClose.onclick = ()=> profileSidebar.style.left = '-300px';
 
-  function contactSupport(){
-    window.location.href = "mailto:vtsmanage@outlook.com";
-  }
+// Elements
+const portfolioSection = document.getElementById('portfolio-section');
+const balanceEl = document.getElementById('portfolio-balance');
+const progressBar = document.getElementById('progress-bar');
+const updatedIndicator = document.getElementById('portfolio-updated');
 
-  // --- User Data ---
-  let users = JSON.parse(localStorage.getItem("users")) || {};
-  let currentUser = localStorage.getItem("currentUser") || Object.keys(users)[0];
-  if(!users[currentUser]){
-    users[currentUser] = { balance:0, investments:[], firstName:"John", lastName:"Doe", email:"john@example.com", country:"USA" };
-  }
+const depositBtn = document.getElementById('depositBtn');
+const withdrawBtn = document.getElementById('withdrawBtn');
+const dealBtn = document.getElementById('dealBtn');
+const livePricesBtn = document.getElementById('livePricesBtn');
 
-  document.getElementById("walletBalance").innerText = users[currentUser].balance;
-  document.getElementById("profileFirstName").innerText = users[currentUser].firstName;
-  document.getElementById("profileLastName").innerText = users[currentUser].lastName;
-  document.getElementById("profileEmail").innerText = users[currentUser].email;
-  document.getElementById("profileCountry").innerText = users[currentUser].country;
+const buttons = [depositBtn, withdrawBtn, dealBtn, livePricesBtn];
+buttons.forEach(btn => btn.addEventListener('click', ()=>{portfolioSection.classList.remove('highlight'); void portfolioSection.offsetWidth; portfolioSection.classList.add('highlight');}));
 
-  // --- Wallet Deposit ---
-  const btcWallet = "bc1qakkc2qn33slcz7xggh8wh6hszjqnfa9k2zlscm";
-  const solWallet = "AcQ4yp84sh86geKeERe1ssX9MAFPS5zko2GfZ3DaQ9LH";
-  let selectedCoin = "", depositAmount = 0;
+function showUpdated(){ updatedIndicator.classList.add('show'); setTimeout(()=>updatedIndicator.classList.remove('show'),2000); }
+function animateBalanceChange(current,target,duration=1000){ const start=performance.now(); function update(time){ const elapsed=time-start; const progress=Math.min(elapsed/duration,1); const value=Math.floor(current+(target-current)*progress); balanceEl.innerText=value.toLocaleString(); if(progress<1) requestAnimationFrame(update);} requestAnimationFrame(update); }
+function animateProgress(targetPercent){ progressBar.style.width=`${targetPercent}%`; }
+function updatePortfolio(depositAmount=0,withdrawAmount=0){ const currentBalance=parseInt(balanceEl.innerText.replace(/,/g,'')); const newBalance=currentBalance+depositAmount-withdrawAmount; animateBalanceChange(currentBalance,newBalance); animateProgress(Math.min((newBalance/20000)*100,100)); showUpdated(); }
 
-  function showDeposit(coin){
-    selectedCoin = coin;
-    let inputAmount = parseFloat(document.getElementById("depositInput").value);
-    if(isNaN(inputAmount) || inputAmount < 20){ alert("Minimum deposit is $20"); return; }
-    depositAmount = inputAmount;
-    document.getElementById("depositSection").style.display = "block";
-    document.getElementById("depositAddress").innerText = coin==="BTC"?btcWallet:solWallet;
-    document.getElementById("depositAmount").innerText = depositAmount;
-    document.getElementById("confirmDepositBtn").style.display="inline-block";
-    document.getElementById("sentDepositBtn").style.display="none";
-  }
+depositBtn.addEventListener('click',()=>updatePortfolio(500,0));
+withdrawBtn.addEventListener('click',()=>updatePortfolio(0,300));
+livePricesBtn.addEventListener('click',()=>window.location.href='/live-prices.html');
 
-  function showSentButton(){ document.getElementById("confirmDepositBtn").style.display="none"; document.getElementById("sentDepositBtn").style.display="inline-block"; }
-
-  function finalizeDeposit(){
-    users[currentUser].balance += depositAmount;
-    saveUser();
-    alert(`${selectedCoin} deposit received! Balance updated: $${users[currentUser].balance}`);
-    document.getElementById("depositSection").style.display="none";
-    document.getElementById("depositInput").value="";
-  }
-
-  function withdrawMain(){
-    let amount=parseFloat(document.getElementById("withdrawInput").value);
-    if(isNaN(amount)||amount<=0){ alert("Enter valid amount"); return; }
-    if(amount>users[currentUser].balance){ alert("Insufficient balance"); return; }
-    users[currentUser].balance -= amount; saveUser(); alert(`Withdrawn $${amount} successfully!`);
-  }
-
-  // --- Investments ---
-  function invest(){
-    let amount=parseInt(document.getElementById("investAmount").value);
-    if(isNaN(amount)||amount<100||amount>100000){ alert("Investment must be 100-100,000"); return; }
-    if(users[currentUser].balance<amount){ alert("Insufficient balance"); return; }
-
-    users[currentUser].balance-=amount;
-    let investId=Date.now();
-    let target=amount*15;
-    users[currentUser].investments.push({id:investId, amount:amount, progress:0, target:target, daysPassed:0});
-    saveUser();
-    displayInvestments();
-    alert(`Investment added! Potential return: $${target}`);
-  }
-
-  function displayInvestments(){
-    let container=document.getElementById("investmentsContainer");
-    container.innerHTML="";
-    if(!users[currentUser].investments||users[currentUser].investments.length===0){
-      container.innerHTML='<p>No active investments <span class="badge">None</span></p>'; return;
-    }
-    users[currentUser].investments.forEach(inv=>{
-      let card=document.createElement("div"); card.className="card";
-      card.innerHTML=`
-        <p>Investment: $${inv.amount}</p>
-        <p>Progress: <span id="progress${inv.id}">${inv.progress}%</span></p>
-        <p>Potential Return: $${inv.target}</p>
-        <button onclick="withdrawInvestment(${inv.id})">Withdraw to Balance</button>
-      `;
-      container.appendChild(card);
-      simulateInvestmentGrowth(inv.id);
-    });
-  }
-
-  function withdrawInvestment(id){
-    let idx=users[currentUser].investments.findIndex(i=>i.id===id);
-    if(idx===-1) return;
-    let inv=users[currentUser].investments[idx];
-    let payout=Math.floor(inv.target*(inv.progress/100));
-    users[currentUser].balance+=payout;
-    users[currentUser].investments.splice(idx,1);
-    saveUser(); displayInvestments();
-    alert(`Investment withdrawn! $${payout} added to main balance.`);
-  }
-
-  function simulateInvestmentGrowth(id){
-    let progressSpan=document.getElementById(`progress${id}`);
-    if(!progressSpan) return;
-    let inv=users[currentUser].investments.find(i=>i.id===id); if(!inv) return;
-    let interval=setInterval(()=>{
-      inv.daysPassed++;
-      inv.progress=Math.min(100,Math.floor((inv.daysPassed/30)*100));
-      progressSpan.innerText=inv.progress+"%";
-      saveUser();
-      if(inv.progress>=100) clearInterval(interval);
-    },2000);
-  }
-
-  function saveUser(){
-    localStorage.setItem("users", JSON.stringify(users));
-    document.getElementById("walletBalance").innerText=users[currentUser].balance;
-  }
-
-  displayInvestments();
-
-  // --- Live Crypto Prices ---
-  async function updateCryptoPrices(){
-    try{
-      let res=await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,solana&vs_currencies=usd");
-      let data=await res.json();
-      document.getElementById("btcPrice").innerText=data.bitcoin.usd;
-      document.getElementById("solPrice").innerText=data.solana.usd;
-    }catch(e){ console.error(e); }
-  }
-  updateCryptoPrices();
-  setInterval(updateCryptoPrices,60000);
+function sendDealRequest(){
+    const overlay=document.createElement('div'); overlay.style.position='fixed'; overlay.style.top=0; overlay.style.left=0; overlay.style.width='100%'; overlay.style.height='100%'; overlay.style.backdropFilter='blur(5px)'; overlay.style.background='rgba(0,0,0,0.3)'; overlay.style.display='flex'; overlay.style.alignItems='center'; overlay.style.justifyContent='center'; overlay.style.zIndex=2000; overlay.style.opacity=0; overlay.style.transition='opacity 0.3s ease'; document.body.appendChild(overlay); setTimeout(()=>overlay.style.opacity=1,50);
+    const popup=document.createElement('div'); popup.style.background='#fff'; popup.style.padding='25px'; popup.style.borderRadius='12px'; popup.style.textAlign='center'; popup.style.width='320px'; popup.style.boxShadow='0 10px 25px rgba(0,0,0,0.3)'; popup.style.transform='scale(0.8) translateY(-50px)'; popup.style.opacity=0; document.body.appendChild(popup);
+    function centerPopup(){ popup.style.left=(window.innerWidth-popup.offsetWidth)/2+'px'; popup.style.top=(window.innerHeight-popup.offsetHeight)/2+'px'; } centerPopup(); window.addEventListener('resize',centerPopup);
+    popup.innerHTML=`<h3 style="margin-top:0;color:#2C3E50;">Investment Deal Request</h3>
+    <p style="margin:15px 0;">Send a deal request to the support manager?</p>
+    <button id="dealYes" style="margin-right:10px;background:#4CAF50;color:white;border:none;padding:8px 15px;border-radius:5px;cursor:pointer;">Yes</button>
+    <button id="dealCancel" style="background:#e74c3c;color:white;border:none;padding:8px 15px;border-radius:5px;cursor:pointer;">Cancel</button>`;
+    setTimeout(()=>{ popup.style.transform='scale(1) translateY(0)'; popup.style.opacity=1; },50);
+    document.getElementById('dealCancel').onclick=()=>{ popup.remove(); overlay.remove(); };
+    document.getElementById('dealYes').onclick=()=>{ window.location.href="mailto:vtsmanage@outlook.com?subject=Investment Deal Request&body=I want the deal"; popup.remove(); overlay.remove(); };
+}
+dealBtn.addEventListener('click',sendDealRequest);
 </script>
 </body>
 </html>
