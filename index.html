@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vaultix</title>
+
+<style>
+body { font-family: Arial; background:#f4f4f4; text-align:center; }
+.container { background:white; padding:20px; margin:50px auto; width:300px; border-radius:10px; }
+input, button { width:100%; padding:10px; margin:8px 0; }
+button { background:#0984e3; color:white; border:none; cursor:pointer; }
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h2 id="title">Sign In</h2>
+
+<!-- LOGIN -->
+<div id="loginBox">
+<input id="loginUser" placeholder="Email or Username">
+<input id="loginPass" type="password" placeholder="Password">
+<button id="loginBtn">Sign In</button>
+</div>
+
+<!-- SIGNUP -->
+<div id="signupBox" style="display:none;">
+<input id="suUser" placeholder="Username">
+<input id="suEmail" placeholder="Email">
+<input id="suPass" type="password" placeholder="Password">
+<input id="suPass2" type="password" placeholder="Confirm Password">
+<button id="signupBtn">Sign Up</button>
+</div>
+
+<p>
+<span id="switchText">Don't have an account?</span>
+<a href="#" id="switchBtn">Sign Up</a>
+</p>
+
+</div>
+
+<script>
+
+// LOAD USERS
+let users = JSON.parse(localStorage.getItem("users")) || {};
+
+// SWITCH LOGIN/SIGNUP
+document.getElementById("switchBtn").onclick = function() {
+    let login = document.getElementById("loginBox");
+    let signup = document.getElementById("signupBox");
+    let title = document.getElementById("title");
+    let text = document.getElementById("switchText");
+    let btn = document.getElementById("switchBtn");
+
+    if (signup.style.display === "none") {
+        signup.style.display = "block";
+        login.style.display = "none";
+        title.innerText = "Sign Up";
+        text.innerText = "Already have an account?";
+        btn.innerText = "Sign In";
+    } else {
+        signup.style.display = "none";
+        login.style.display = "block";
+        title.innerText = "Sign In";
+        text.innerText = "Don't have an account?";
+        btn.innerText = "Sign Up";
+    }
+};
+
+// SIGNUP BUTTON (FIXED)
+document.getElementById("signupBtn").onclick = function() {
+    let user = document.getElementById("suUser").value.trim();
+    let email = document.getElementById("suEmail").value.trim();
+    let pass = document.getElementById("suPass").value;
+    let pass2 = document.getElementById("suPass2").value;
+
+    if (!user || !email || !pass || !pass2) {
+        alert("Fill all fields");
+        return;
+    }
+
+    if (pass !== pass2) {
+        alert("Passwords do not match");
+        return;
+    }
+
+    if (users[email]) {
+        alert("Account already exists");
+        return;
+    }
+
+    users[email] = { username: user, password: pass };
+    localStorage.setItem("users", JSON.stringify(users));
+
+    alert("Signup successful! Now login.");
+};
+
+// LOGIN BUTTON (FIXED)
+document.getElementById("loginBtn").onclick = function() {
+    let input = document.getElementById("loginUser").value.trim();
+    let pass = document.getElementById("loginPass").value;
+
+    let found = null;
+
+    for (let key in users) {
+        if (key === input || users[key].username === input) {
+            found = users[key];
+            break;
+        }
+    }
+
+    if (!found || found.password !== pass) {
+        alert("Invalid login");
+        return;
+    }
+
+    alert("Login successful 🎉");
+};
+
+</script>
+
+</body>
+</html>
