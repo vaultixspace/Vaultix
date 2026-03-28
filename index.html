@@ -3,105 +3,132 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vaultix</title>
+  <title>Vaultix - Login & Signup</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <style>
-    body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 0; }
-    .container { max-width: 500px; margin: 50px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);}
-    h1, h2 { text-align: center; color: #2c3e50; }
-    input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
-    button { width: 100%; padding: 10px; border: none; border-radius: 5px; background-color: #2c3e50; color: #fff; font-size: 16px; cursor: pointer; }
-    button:hover { background-color: #34495e; }
-    .message { text-align: center; margin-top: 10px; }
-    .section { margin-top: 30px; }
-    .wallet, .investments { padding: 20px; background: #ecf0f1; border-radius: 10px; margin-bottom: 20px; }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #F5F5F5;
+      color: #2C3E50;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: linear-gradient(90deg, #4CAF50, #2C3E50);
+      color: white;
+      text-align: center;
+      padding: 25px 0;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    }
+
+    .container {
+      width: 90%;
+      max-width: 500px;
+      margin: 30px auto;
+    }
+
+    .card {
+      background-color: white;
+      padding: 20px;
+      margin: 15px 0;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 10px 15px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #45a049;
+      transform: scale(1.05);
+    }
+
+    .message {
+      text-align: center;
+      color: green;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
   </style>
 </head>
 <body>
 
-  <!-- Login Section -->
-  <div class="container" id="loginForm">
-    <h2>Login</h2>
-    <input type="text" id="loginUsername" placeholder="Username" required>
-    <input type="password" id="loginPassword" placeholder="Password" required>
-    <button id="loginBtn">Login</button>
-    <div id="loginMessage" class="message"></div>
+  <header>
+    <h1><i class="fas fa-coins"></i> Vaultix</h1>
+  </header>
+
+  <div class="container">
+
+    <!-- Login Card -->
+    <div class="card">
+      <h2><i class="fas fa-sign-in-alt"></i> Login</h2>
+      <input type="text" id="loginUser" placeholder="Username">
+      <input type="password" id="loginPass" placeholder="Password">
+      <button onclick="login()"><i class="fas fa-arrow-right"></i> Login</button>
+      <div id="loginMessage" class="message"></div>
+    </div>
+
+    <!-- Signup Card -->
+    <div class="card">
+      <h2><i class="fas fa-user-plus"></i> Signup</h2>
+      <input type="text" id="signupUser" placeholder="Username">
+      <input type="password" id="signupPass" placeholder="Password">
+      <button onclick="signup()"><i class="fas fa-check"></i> Signup</button>
+      <div id="signupMessage" class="message"></div>
+    </div>
+
   </div>
 
-  <!-- Signup Section -->
-  <div class="container section" id="signupForm">
-    <h2>Sign Up</h2>
-    <input type="text" id="signupUsername" placeholder="Username" required>
-    <input type="email" id="signupEmail" placeholder="Email" required>
-    <input type="password" id="signupPassword" placeholder="Password" required>
-    <input type="password" id="signupConfirm" placeholder="Confirm Password" required>
-    <button id="signupBtn">Sign Up</button>
-    <div id="signupMessage" class="message"></div>
-  </div>
-
-  <!-- Wallet Section -->
-  <div class="container section wallet" id="walletSection">
-    <h2>Wallet</h2>
-    <p>Balance: $0.00</p>
-    <button>Add Funds</button>
-  </div>
-
-  <!-- Investments Section -->
-  <div class="container section investments" id="investmentsSection">
-    <h2>Investments</h2>
-    <p>No active investments yet.</p>
-    <button>Invest Now</button>
-  </div>
-
-<script>
-  // ---------- LOGIN ----------
-  document.getElementById("loginBtn").addEventListener("click", function() {
-    const username = document.getElementById("loginUsername").value;
-    const password = document.getElementById("loginPassword").value;
-    const loginMessage = document.getElementById("loginMessage");
-
-    if(username && password){
-      loginMessage.textContent = "Login successful! Redirecting...";
-      loginMessage.style.color = "green";
-
-      setTimeout(() => {
-        window.location.href = "dashboard.html"; // redirect to dashboard
-      }, 1000);
-    } else {
-      loginMessage.textContent = "Please enter username and password";
-      loginMessage.style.color = "red";
-    }
-  });
-
-  // ---------- SIGNUP ----------
-  document.getElementById("signupBtn").addEventListener("click", function(){
-    const username = document.getElementById("signupUsername").value;
-    const email = document.getElementById("signupEmail").value;
-    const password = document.getElementById("signupPassword").value;
-    const confirm = document.getElementById("signupConfirm").value;
-    const signupMessage = document.getElementById("signupMessage");
-
-    if(!username || !email || !password || !confirm){
-      signupMessage.textContent = "Please fill in all fields";
-      signupMessage.style.color = "red";
-      return;
+  <script>
+    function login() {
+      const user = document.getElementById('loginUser').value;
+      const pass = document.getElementById('loginPass').value;
+      if(user && pass) {
+        document.getElementById('loginMessage').innerText = "Login successful!";
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 1000);
+      } else {
+        document.getElementById('loginMessage').innerText = "Please enter username and password.";
+      }
     }
 
-    if(password !== confirm){
-      signupMessage.textContent = "Passwords do not match";
-      signupMessage.style.color = "red";
-      return;
+    function signup() {
+      const user = document.getElementById('signupUser').value;
+      const pass = document.getElementById('signupPass').value;
+      if(user && pass) {
+        document.getElementById('signupMessage').innerText = "Signup successful!";
+      } else {
+        document.getElementById('signupMessage').innerText = "Please fill all fields.";
+      }
     }
-
-    signupMessage.textContent = "Signup successful!";
-    signupMessage.style.color = "green";
-
-    // clear fields
-    document.getElementById("signupUsername").value = "";
-    document.getElementById("signupEmail").value = "";
-    document.getElementById("signupPassword").value = "";
-    document.getElementById("signupConfirm").value = "";
-  });
-</script>
-
+  </script>
 </body>
 </html>
